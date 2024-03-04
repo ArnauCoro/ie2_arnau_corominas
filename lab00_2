@@ -1,0 +1,60 @@
+#include <iostream>
+
+class Complex {
+private:
+    double real;
+    double imag;
+
+public:
+    
+    Complex(double realPart = 0.0, double imagPart = 0.0) : real(realPart), imag(imagPart) {}
+
+    void setReal(double realPart) {
+        real = realPart;
+    }
+
+    void setImag(double imagPart) {
+        imag = imagPart;
+    }
+
+    double getReal() const {
+        return real;
+    }
+
+    double getImag() const {
+        return imag;
+    }
+
+    void print() const {
+        std::cout << real;
+        if (imag >= 0)
+            std::cout << "+";
+        std::cout << imag << "i" << std::endl;
+    }
+
+    Complex add(const Complex& other) const {
+        Complex result;
+        result.real = real + other.real;
+        result.imag = imag + other.imag;
+        return result;
+    }
+    Complex add(double realNumber) const {
+        Complex result;
+        result.real = real + realNumber;
+        result.imag = imag;
+        return result;
+    }
+};
+
+int main() {
+    Complex a(1.0, -2.0);
+    Complex b(3.14); 
+
+    b.setImag(-5);
+
+    Complex c = a.add(b);
+
+    c.print();
+
+    return 0;
+}
