@@ -1,0 +1,96 @@
+#include <iostream>
+#include <vector>
+#include <numeric>
+
+using namespace std;
+
+class Student {
+private:
+    std::string name;
+    std::string surname;
+    std::string albumnumber;
+    std::vector<float> grades;
+
+public:
+    Student() {
+        cout << "A object was created" << endl;
+    }
+
+    ~Student() {
+        cout << "A object was destructed" << endl;
+    }
+
+
+    void setName(const std::string& newName) {
+        name = newName;
+    }
+
+    void setSurname(const std::string& newSurname) {
+        surname = newSurname;
+    }
+    void setAlbumNumber(const std::string& newAlbumNumber) {
+        if (newAlbumNumber.length() < 5 || newAlbumNumber.length() > 6) {
+            throw std::invalid_argument("Invalid album number length");
+        }
+        albumnumber = newAlbumNumber;
+    }
+
+
+    bool add_grade(float grade) {
+        if (grade >= 2.0 && grade <= 5.0) {
+            grades.push_back(grade);
+            return true;
+        }
+        return false;
+    }
+
+    float calculate_grade() {
+        if (grades.empty())
+            return 0.0f;
+
+        float sum = std::accumulate(grades.begin(), grades.end(), 0.0f);
+        return sum / grades.size();
+    }
+
+
+    void print_() {
+        cout << "Name: " << name << endl;
+        cout << "Surname: " << surname << endl;
+        cout << "Album number: " << albumnumber << endl;
+        cout << "Grades: ";
+        for (auto grade : grades) {
+            cout << grade << " ";
+        }
+        cout << endl;
+        cout << "Mean Grade: " << calculate_grade() << endl;
+        cout << "Pass status: " << (checkPassStatus() ? "Passed" : "Failed") << endl;
+    }
+
+    bool checkPassStatus() const {
+        int count_of_2 = 0;
+        for (const auto& grade : grades) {
+            if (grade == 2.0) {
+                count_of_2++;
+                if (count_of_2 > 1)
+                    return false;
+            }
+        }
+        return true;
+    }
+};
+
+int main() {
+    Student student;
+    student.setName("Arnau");
+    student.setSurname("Corominas");
+    student.setAlbumNumber("159374");
+
+    student.add_grade(5.0);
+    student.add_grade(3.0);
+    student.add_grade(2.5);
+
+    student.print_();
+
+    return 0;
+}
+
