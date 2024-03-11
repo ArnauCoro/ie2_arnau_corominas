@@ -1,0 +1,163 @@
+//Assingment 1
+#include <iostream>
+#include <iomanip>
+
+class Time {
+private:
+    int hours;
+    int minutes;
+    int seconds;
+
+public:
+
+    Time() : hours(0), minutes(0), seconds(0) {}
+    Time(int secs) {
+        hours = secs / 3600;
+        minutes = (secs % 3600) / 60;
+        seconds = secs % 60;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Time& t) {
+        os << std::setw(2) << std::setfill('0') << t.hours << "h:"
+           << std::setw(2) << std::setfill('0') << t.minutes << "m:"
+           << std::setw(2) << std::setfill('0') << t.seconds << "s";
+        return os;
+    }
+
+
+    friend std::istream& operator>>(std::istream& is, Time& t) {
+        char c;
+        is >> t.hours >> c >> t.minutes >> c >> t.seconds;
+        return is;
+    }
+
+    Time operator-(const Time& time2) const {
+        int total_seconds = ((hours - time2.hours) * 3600) +
+                            ((minutes - time2.minutes) * 60) +
+                            (seconds - time2.seconds);
+        return Time(total_seconds);
+    }
+
+
+    operator int() const {
+        return (hours * 3600) + (minutes * 60) + seconds;
+    }
+
+
+    Time operator*(int scalar) const {
+        int total_seconds = ((hours * 3600) + (minutes * 60) + (seconds)) * scalar;
+        return Time(total_seconds);
+    }
+};
+
+int main() {
+
+    Time t1(200);
+    std::cout << t1 << std::endl;
+
+    Time t2;
+    std::cin >> t2;
+
+    Time t3 = t2 - t1;
+    std::cout << "t2 - t1 = " << t3 << std::endl;
+
+    int t3s = t3;
+    std::cout <<t3s << std::endl;
+
+
+
+    return 0;
+}
+
+//Assingment 2
+#include <iostream>
+#include <vector>
+#include <string>
+
+class Item {
+public:
+    std::string name;
+    double unit_net_price;
+    char vat_type;
+    int amount_sold;
+
+public:
+
+    Item(const std::string& name, double unit_net_price, char vat_type, int amount_sold)
+        : name(name), unit_net_price(unit_net_price), vat_type(vat_type), amount_sold(amount_sold) {}
+
+
+    friend std::ostream& operator<<(std::ostream& os, const Item& item) {
+        os << item.name << "      | "
+           << item.unit_net_price << "  "
+           << item.vat_type << "  | "
+           << item.amount_sold << " | "
+           << item.unit_net_price * item.amount_sold << "  | "
+           << item.total_with_vat() << std::endl;
+        return os;
+    }
+
+
+    double total_with_vat() const {
+        double vat_percentage = 0.23;
+        switch(vat_type) {
+        case 'B':
+            vat_percentage = 0.08;
+            break;
+        case 'C':
+            vat_percentage = 0.0;
+            break;
+        }
+        return unit_net_price * amount_sold * (1 + vat_percentage);
+    }
+};
+
+class Invoice {
+private:
+    int seller_nip;
+    int buyer_nip;
+    std::vector<Item> items;
+
+public:
+
+    Invoice(int seller_nip,int buyer_nip)
+        : seller_nip(seller_nip), buyer_nip(buyer_nip) {}
+
+
+    void add_item(const Item& item) {
+        items.push_back(item);
+    }
+
+
+    friend std::ostream& operator<<(std::ostream& os, const Invoice& inv) {
+        os << "------------------VAT invoice------------------\n";
+        os << "===============================================\n";
+        os << "Seller: " << inv.seller_nip << "    Buyer: " << inv.buyer_nip << "\n\n\n";
+        os <<"              | "
+           << "c.j. VAT | "
+           << "il. | "
+           << "net | "
+           << "total" << "\n";
+
+        double total_net = 0;
+        double total_total = 0;
+        for (const auto& item : inv.items) {
+            os << item;
+            total_net += item.unit_net_price * item.amount_sold;
+            total_total += item.total_with_vat();
+        }
+        os << "------------------------------------ TOTAL ----\n                                  ";
+        os << total_net << " | "
+           << total_total << "\n";
+        return os;
+    }
+};
+
+int main() {
+    Invoice inv(7770003699, 1234567890);
+    inv.add_item(Item("M3 screw", 0.37, 'A', 100));
+    inv.add_item(Item("2 mm drill", 2.54, 'B', 2));
+    std::cout << inv << std::endl;
+
+    return 0;
+}
